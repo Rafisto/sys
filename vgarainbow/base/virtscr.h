@@ -3,7 +3,7 @@
 
 #include "scr.h"
 
-char VIRTUAL_SCREEN[80][256][2];
+char VIRTUAL_SCREEN[80][512][2];
 unsigned int VIRTUAL_SCREEN_CURSOR_X = 0;
 unsigned int VIRTUAL_SCREEN_CURSOR_Y = 0;
 unsigned int VIRTUAL_SCREEN_SCROLL = 0;
@@ -21,7 +21,7 @@ void display()
 
 void scroll_down()
 {
-    if (VIRTUAL_SCREEN_SCROLL == 255)
+    if (VIRTUAL_SCREEN_SCROLL == 511)
     {
         return;
     }
@@ -61,7 +61,7 @@ void write_char(char character, int color)
         VIRTUAL_SCREEN_CURSOR_Y++;
     }
 
-    if (VIRTUAL_SCREEN_CURSOR_Y >= 256)
+    if (VIRTUAL_SCREEN_CURSOR_Y >= 511)
     {
         scroll_up();
         VIRTUAL_SCREEN_CURSOR_Y--;

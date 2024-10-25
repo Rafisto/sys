@@ -20,7 +20,7 @@ unsigned char read_char() {
         }
     }
 
-    sleep(100);
+    sleep(10);
 
     switch (scancode) {
         case 0x1E: return 'a';
