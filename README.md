@@ -11,7 +11,7 @@ CLI presents a few commands to interact with the system. It allows for specifyin
 ![Command Line Interface](./pub/cli.gif)
 
 ```c
-void sum_command(const int argc, const char const* const* argv) {
+void sum_command(int argc, char** argv) {
     int sum = 0;
     for (int i = 1; i < argc; i++) {
         sum += atoi(argv[i]);
