@@ -6,8 +6,12 @@ void clear_command();
 void uptime_command();
 void shutdown_command();
 void reboot_command();
+void echo_command();
+void sum_command();
+void meminfo_command();
+void blahaj_command();
 
-typedef void (*cmdhandler)(void);
+typedef void (*cmdhandler)(int argc, char **argv);
 
 typedef struct
 {
@@ -20,6 +24,10 @@ static Command COMMANDS[] = {
     {"clear", clear_command},
     {"shutdown", shutdown_command},
     {"reboot", reboot_command},
+    {"echo", echo_command},
+    {"sum", sum_command},
+    {"meminfo", meminfo_command},
+    {"blahaj", blahaj_command}
 };
 
 static int get_commands_count() {

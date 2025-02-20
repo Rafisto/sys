@@ -1,6 +1,8 @@
 #include "keyboard.h"
 #include "../asm/asm.h"
 
+#include "../console/console.h"
+
 void keyboard_init(console_input_function func)
 {
   console_buffer_function = func;
@@ -14,6 +16,7 @@ void keyboard_handler(void)
   signed char keycode;
 
   keycode = asm_read_port(0x60);
+
   if (keycode >= 0 && keyboard_map[keycode])
   {
     console_buffer_function(keyboard_map[keycode]);

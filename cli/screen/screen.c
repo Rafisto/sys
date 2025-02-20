@@ -187,7 +187,7 @@ void write_format_impl(const char *fmt, uint32_t *args, int arg_count)
     {
         if (*fmt == '%' && *(fmt + 1))
         {
-            fmt++; // Move past '%'
+            fmt++; // Move past '%' 
             switch (*fmt)
             {
                 case 'd':

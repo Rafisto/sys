@@ -11,4 +11,8 @@ extern void asm_load_idt(void* ptr);
 extern void asm_shutdown(void);
 extern void asm_reboot(void);
 
+// paging.asm
+extern void asm_load_page_directory(unsigned int* page_directory);
+extern void asm_enable_paging(void);
+
 #endif // BASE_ASM_H
