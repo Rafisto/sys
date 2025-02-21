@@ -1,9 +1,18 @@
 Table of Contents
 
+- [Framebuffer](#framebuffer) - Rotating a cube using framebuffer set in the bootloader.
 - [Command Line Interface](#command-line-interface) - CLI with a few commands to interact with the system.
 - [Keyboard on Interrupts](#keyboard-on-interrupts) - Keyboard controller on x86 with GDT, IDT and IRQ.
 - [VGA Rainbow](#vga-rainbow) - Display *Hello World!* in all colors provided by VGA text mode.
  
+## Framebuffer
+
+I configured the framebuffer in GRUB and have managed to request its address using [Multiboot2 headers](./framebuffer/multiboot_header.asm#L26). I also enabled the [FPU and SSE instructions](./framebuffer/boot.asm#L21) to be used in the program. The framebuffer is then used to show a rotating pink cube.
+
+![Rotating pink cube](./pub/framebuffer.gif)
+
+Having no stdlib I wrote a few alogrithms, `sin`, `cos` using Taylor series approximation and line drawing using Bresenham's algorithm. The cube is drawn using 8 vertices and 12 edges. It is then rotated along each axis. 
+
 ## Command Line Interface
 
 CLI presents a few commands to interact with the system. It allows for specifying up to 16 arguments for each command. Just by adding a new function to the `commands.c` and updating the `commands.h` file you can add a new command.
@@ -37,3 +46,19 @@ VGA Rainbow is a small bare-metal program created to display *Hello World!* in a
 ![VGA Rainbow Showcase GIF](./pub/vgarainbow.gif)
 
 This is an exetension of `hello-os` project, I added a simple [virtual screen](./vgarainbow/base/virtscr.h) and [keyboard controller](./vgarainbow/base/kbd.h) which can be further extended to create more complex programs.
+
+## Tricks
+
+You can debug the kernel using QEMU and GDB. Remember to compile the kernel with debug symbols.
+
+```bash
+make qemu-gdb
+gdb -ex "target remote localhost:1234" -ex "symbol-file _build/kernel.elf"
+```
+
+In order to run the kernel on a real machine, you can create a bootable USB stick.
+
+```bash
+sudo dd if=_build/hello.iso of=/dev/sdb bs=1MB 
+sync
+```
