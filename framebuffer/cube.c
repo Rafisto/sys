@@ -81,7 +81,7 @@ void rotate_cube(float angle_x, float angle_y, float angle_z) {
     }
 }
 
-void draw_cube(uint32_t color) {
+void draw_cube(uint32_t color, int current_swap_frame) {
     if (framebuffer == NULL) {
         return; 
     }
@@ -98,9 +98,7 @@ void draw_cube(uint32_t color) {
         projected_points[i].x = (cube.points[i].x / z) * framebuffer->framebuffer_width / 2.0f + framebuffer->framebuffer_width / 2.0f;
         projected_points[i].y = (cube.points[i].y / z) * framebuffer->framebuffer_height / 2.0f + framebuffer->framebuffer_height / 2.0f;
     }
-
-    clear_framebuffer();
-
+    
     for (int i = 0; i < 12; i++) {
         int start_idx = edges[i][0];
         int end_idx = edges[i][1];
@@ -110,22 +108,19 @@ void draw_cube(uint32_t color) {
         float x1 = projected_points[end_idx].x;
         float y1 = projected_points[end_idx].y;
 
-        draw_point(x0, y0, color);
-        draw_point(x1, y1, color);
-
-        draw_line(x0, y0, x1, y1, color);
+        draw_line(x0, y0, x1, y1, color, current_swap_frame);
     }
 }
 
-void draw_point(float x, float y, uint32_t color) {
+void draw_point(float x, float y, uint32_t color, int current_swap_frame) {
     int ix = (int)x;
     int iy = (int)y;
     if (ix >= 0 && ix < framebuffer->framebuffer_width && iy >= 0 && iy < framebuffer->framebuffer_height) {
-        framebuffer_addr[iy * framebuffer->framebuffer_pitch / 4 + ix] = color;
+        swap_frames[current_swap_frame].pixels[iy * framebuffer->framebuffer_width + ix] = color;
     }
 }
 
-void draw_line(float x0, float y0, float x1, float y1, uint32_t color) {
+void draw_line(float x0, float y0, float x1, float y1, uint32_t color, int current_swap_frame) {
     int dx = absf((int)x1 - (int)x0);
     int dy = absf((int)y1 - (int)y0);
     int sx = (x0 < x1) ? 1 : -1;
@@ -133,7 +128,7 @@ void draw_line(float x0, float y0, float x1, float y1, uint32_t color) {
     int err = dx - dy;
 
     while (1) {
-        draw_point(x0, y0, color);
+        draw_point(x0, y0, color, current_swap_frame);
         if ((int)x0 == (int)x1 && (int)y0 == (int)y1) break;
         int e2 = 2 * err;
         if (e2 > -dy) {

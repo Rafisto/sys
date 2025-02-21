@@ -1,6 +1,5 @@
 #include "framebuffer.h"
 #include "cube.h"
-#include "time.h"
 
 void kmain(uint32_t multiboot_info_address) {
     multiboot2_tag_t *tag;
@@ -18,11 +17,13 @@ void kmain(uint32_t multiboot_info_address) {
         while(1) __asm__("hlt\n\t");
     }
 
+    int frame_index = 0;
     while (1) {
         rotate_cube(0.01f, 0.01f, 0.01f);
-        draw_cube(0xFF00FF);
-
-        sleep(100);
+        clear_swap_frame(&swap_frames[frame_index]);
+        frame_index = (frame_index + 1) % 8;
+        draw_cube(0xFF00FF, frame_index);
+        set_framebuffer(&swap_frames[frame_index]);
     }
 
     while(1) __asm__("hlt\n\t");

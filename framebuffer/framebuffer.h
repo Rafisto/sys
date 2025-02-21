@@ -42,6 +42,18 @@ typedef struct {
 extern framebuffer_tag_t *framebuffer;
 extern uint32_t *framebuffer_addr;
 
+/*
+    Create a swap frame struct (list of pixels) to store the pixels of the framebuffer
+*/
+typedef struct {
+    uint32_t pixels[1024* 768];
+} swap_frame_t;
+
+// create 8 swap frames
+extern swap_frame_t swap_frames[8];
+
+void set_framebuffer(swap_frame_t *swap_frame);
+void clear_swap_frame(swap_frame_t *swap_frame);
 void clear_framebuffer();
 
 #endif // FRAMEBUFFER_H
