@@ -1,10 +1,17 @@
 Table of Contents
 
+- [Screen](#screen) - Text mode in framebuffer using a generated character set bitmap.
 - [Framebuffer](#framebuffer) - Rotating a cube using framebuffer set in the bootloader.
 - [Command Line Interface](#command-line-interface) - CLI with a few commands to interact with the system.
 - [Keyboard on Interrupts](#keyboard-on-interrupts) - Keyboard controller on x86 with GDT, IDT and IRQ.
 - [VGA Rainbow](#vga-rainbow) - Display *Hello World!* in all colors provided by VGA text mode.
  
+## Screen
+
+Ported the [command line interface](#command-line-interface) to now use framebuffer instead of VGA Text Mode. The graphic mode is set to `1024x768x32` which means the system now supports RGB colors and visual effects, such as the OS-logotype.
+
+![R-OS first framebuffer cli](./pub/screen.gif)
+
 ## Framebuffer
 
 I configured the framebuffer in GRUB and have managed to request its address using [Multiboot2 headers](./framebuffer/multiboot_header.asm#L26). I also enabled the [FPU and SSE instructions](./framebuffer/boot.asm#L21) to be used in the program. The framebuffer is then used to show a rotating pink cube.
