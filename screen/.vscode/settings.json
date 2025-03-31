@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.asm": "nasm",
+        "console.h": "c"
+    }
+}
