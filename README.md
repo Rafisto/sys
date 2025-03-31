@@ -1,5 +1,6 @@
 Table of Contents
 
+- [Framebuffer](#framebuffer) - Rotating a cube using framebuffer set in the bootloader.
 - [Command Line Interface](#command-line-interface) - CLI with a few commands to interact with the system.
 - [Keyboard on Interrupts](#keyboard-on-interrupts) - Keyboard controller on x86 with GDT, IDT and IRQ.
 - [VGA Rainbow](#vga-rainbow) - Display *Hello World!* in all colors provided by VGA text mode.
@@ -51,3 +52,19 @@ VGA Rainbow is a small bare-metal program created to display *Hello World!* in a
 ![VGA Rainbow Showcase GIF](./pub/vgarainbow.gif)
 
 This is an exetension of `hello-os` project, I added a simple [virtual screen](./vgarainbow/base/virtscr.h) and [keyboard controller](./vgarainbow/base/kbd.h) which can be further extended to create more complex programs.
+
+## Tricks
+
+You can debug the kernel using QEMU and GDB. Remember to compile the kernel with debug symbols.
+
+```bash
+make qemu-gdb
+gdb -ex "target remote localhost:1234" -ex "symbol-file _build/kernel.elf"
+```
+
+In order to run the kernel on a real machine, you can create a bootable USB stick.
+
+```bash
+sudo dd if=_build/hello.iso of=/dev/sdb bs=1MB 
+sync
+```
