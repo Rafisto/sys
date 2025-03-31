@@ -1,5 +1,6 @@
 Table of Contents
 
+- [Screen](#screen) - Text mode in framebuffer using a generated character set bitmap.
 - [Framebuffer](#framebuffer) - Rotating a cube using framebuffer set in the bootloader.
 - [Command Line Interface](#command-line-interface) - CLI with a few commands to interact with the system.
 - [Keyboard on Interrupts](#keyboard-on-interrupts) - Keyboard controller on x86 with GDT, IDT and IRQ.
