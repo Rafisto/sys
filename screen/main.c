@@ -11,13 +11,19 @@
 #include "screen/framebuffer.h"
 #include "screen/fscreen.h"
 
+#include "exceptions/handlers.h"
+
 void init_interrupt() {
     interrupt_descriptor_table_init();
     load_idt_entry(0x21, (unsigned long) asm_keyboard_handler_interrupt, 0x08, 0x8e);
+    
+    // register isr handler for div 0 exception
+    load_idt_entry(0x00, (unsigned long) asm_divide_by_zero_handler, 0x08, 0x8e);
     keyboard_init(console_input);
 }
 
 void kmain(uint32_t multiboot_info_address) {
+
     multiboot2_tag_t *tag;
     for (tag = (multiboot2_tag_t *)(multiboot_info_address + 8);
          tag->type != 0; 
@@ -28,7 +34,7 @@ void kmain(uint32_t multiboot_info_address) {
             break;
         }
     }
-
+    
     if (framebuffer == NULL) {
         while(1) __asm__("hlt\n\t");
     }
@@ -49,9 +55,9 @@ void kmain(uint32_t multiboot_info_address) {
     write_string("Initializing frame allocator...\n");
     init_frame_allocator();
 
-    // write_string("Initializing paging...\n");
-    // init_paging();
-
+    write_string("Initializing paging...\n");
+    init_paging();
+    
     write_string("Welcome to my tiny system.\n");
     console_prompt();
    

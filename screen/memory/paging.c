@@ -15,8 +15,8 @@ void init_paging() {
         first_page_table[i] = (i * 0x1000) | 3; // attributes: supervisor level, read/write, present.
     }
 
-    page_directory[0] = ((unsigned int)first_page_table) | 3;
+    page_directory[0] = ((uint32_t) first_page_table) | 3;
 
     asm_load_page_directory(page_directory);
-    asm_enable_paging();
+    // asm_enable_paging();
 }
