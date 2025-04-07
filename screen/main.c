@@ -5,9 +5,6 @@
 
 #include "kernel/types.h"
 
-#include "memory/frame.h"
-#include "memory/paging.h"
-
 #include "screen/framebuffer.h"
 #include "screen/fscreen.h"
 
@@ -45,12 +42,6 @@ void kmain(uint32_t multiboot_info_address) {
 
     write_string("Initializing interrupts...\n");
     init_interrupt();
-
-    write_string("Initializing frame allocator...\n");
-    init_frame_allocator();
-
-    // write_string("Initializing paging...\n");
-    // init_paging();
 
     write_string("Welcome to my tiny system.\n");
     console_prompt();
