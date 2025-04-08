@@ -3,6 +3,7 @@
 
 #include "../kernel/types.h"
 #include "../serial/serial.h"
+#include "../screen/framebuffer.h"
 
 #include "memory.h"
 

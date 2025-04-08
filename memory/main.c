@@ -64,14 +64,40 @@ void kmain(uint32_t multiboot_info_address)
 
     print_os_logo();
 
-    serial_print("OS by Rafal Wlodarczyk\n");
-    serial_print("Initializing kernel...\n");
-
-    serial_print("Initializing interrupts...\n");
+    write_string("OS by rafist0\n");
+    serial_print("OS by rafist0\n");
+    
     init_interrupt();
-
-    serial_print("Initializing memory...\n");
     init_mmap(multiboot_info_address);
+
+    // allocate a frame
+    void *frame = allocate_frame();
+    if (frame == NULL)
+    {
+        serial_print("Failed to allocate frame\n");
+        while (1)
+            __asm__("hlt\n\t");
+    }
+    else
+    {
+        serial_print("Allocated frame at: ");
+        serial_write_hex((uint32_t)frame);
+        serial_print("\n");
+    }
+    // free the frame
+    free_frame(frame);
+    serial_print("Freed frame at: ");
+    serial_write_hex((uint32_t)frame);
+    serial_print("\n");
+    // check if the frame is free
+    if (is_frame_free(frame))
+    {
+        serial_print("Frame is free\n");
+    }
+    else
+    {
+        serial_print("Frame is not free\n");
+    }
 
     write_string("Welcome to my tiny system.\n");
     console_prompt();

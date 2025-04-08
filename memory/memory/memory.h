@@ -15,7 +15,7 @@ extern memory_region_t memory_regions[MAX_USABLE_REGIONS];
 extern size_t memory_region_count;
 
 #define FRAME_SIZE 4096
-#define MAX_FRAMES 1000000
+#define MAX_FRAMES 1000
 
 static uint8_t bitmap[MAX_FRAMES / 8];
 
