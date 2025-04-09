@@ -17,5 +17,6 @@ void serial_print(const char* str);
 void serial_write_int(int num);
 void serial_write_hex(int num);
 void serial_write_format_impl(const char *fmt, uint32_t *args, int arg_count);
+void serial_read(char *buffer, int size);
 
 #endif // SERIAL_SERIAL_H

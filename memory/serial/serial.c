@@ -67,3 +67,13 @@ void serial_write_format_impl(const char *fmt, uint32_t *args, int arg_count) {
         fmt++;
     }
 }
+
+void serial_read(char *buffer, int size) {
+    for (int i = 0; i < size; i++) {
+        while ((inb(COM1 + 5) & 0x01) == 0);
+        buffer[i] = inb(COM1);
+    }
+    serial_write('\n');
+    serial_print(buffer);
+    serial_write('\n');
+}

@@ -70,38 +70,10 @@ void kmain(uint32_t multiboot_info_address)
     init_interrupt();
     init_mmap(multiboot_info_address);
 
-    // allocate a frame
-    void *frame = allocate_frame();
-    if (frame == NULL)
-    {
-        serial_print("Failed to allocate frame\n");
-        while (1)
-            __asm__("hlt\n\t");
-    }
-    else
-    {
-        serial_print("Allocated frame at: ");
-        serial_write_hex((uint32_t)frame);
-        serial_print("\n");
-    }
-    // free the frame
-    free_frame(frame);
-    serial_print("Freed frame at: ");
-    serial_write_hex((uint32_t)frame);
-    serial_print("\n");
-    // check if the frame is free
-    if (is_frame_free(frame))
-    {
-        serial_print("Frame is free\n");
-    }
-    else
-    {
-        serial_print("Frame is not free\n");
-    }
-
     write_string("Welcome to my tiny system.\n");
     console_prompt();
 
-    while (1)
-        __asm__("hlt\n\t");
+    // this literally works like arduino serial port
+    char buffer[10];
+    while (1) serial_read(0, 10);
 }

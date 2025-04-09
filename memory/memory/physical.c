@@ -19,12 +19,6 @@ void *allocate_frame()
 {
     for (uint32_t i = 0; i < MAX_FRAMES ; i++)
     {
-        serial_write_format("[max frames] %d\n", MAX_FRAMES);
-        serial_write_format("[pmem] checking frame %d\n", i);
-        serial_write_format("[pmem] bitmap[%d] = %x\n", i / 8, bitmap[i / 8]);
-        serial_write_format("[pmem] bitmap[%d] & %x = %x\n", i / 8, (1 << (i % 8)), bitmap[i / 8] & (1 << (i % 8)));
-        serial_write_format("[pmem] test_frame(%d) = %d\n", i, test_frame(i));
-        serial_write_format("[pmem] frame %d = %x\n", i, (i * FRAME_SIZE));
         if (test_frame(i))
         {
             set_frame(i);
