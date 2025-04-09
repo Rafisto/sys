@@ -65,11 +65,11 @@ void init_physical_memory()
     uint32_t free_memory = 0;
     for (size_t i = 0; i < MAX_FRAMES; i++)
     {
-        if (!frame_free(i))
+        if (frame_free(i))
         {
             free_memory += FRAME_SIZE;
         }
     }
 
-    serial_write_format("[pmem] free memory: %d KB\n", free_memory / 1000);
+    serial_write_format("[pmem] free memory: %d KB\n", free_memory);
 }

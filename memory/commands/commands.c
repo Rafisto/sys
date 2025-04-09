@@ -1,7 +1,6 @@
 #include "commands.h"
 #include "../screen/fscreen.h"
 #include "../asm/asm.h"
-
 #include "../utils/atoi.h"
 
 extern int atoi(const char *str);
@@ -44,9 +43,9 @@ void sum_command(int argc, char **argv) {
 }
 
 void meminfo_command(int argc, char **argv) {
-    write_format("[kernel] [%x-%x] %d bytes\n", (uint32_t) &start_text, (uint32_t) &end_data, &end_data - &start_text);
-    write_format("[stack] [%x-%x] %d bytes\n", (uint32_t) &stack_begin, (uint32_t) &stack_end, &stack_end - &stack_begin);
-    write_format("[bss] [%x-%x] %d bytes\n", (uint32_t) &start_bss, (uint32_t) &end_bss, &end_bss - &start_bss);
+    write_format("[kernel] [%x-%x] %d bytes\n", (uint32_t) start_text, (uint32_t) end_data, &end_data - &start_text);
+    write_format("[stack] [%x-%x] %d bytes\n", (uint32_t) stack_begin, (uint32_t) stack_end, &stack_end - &stack_begin);
+    write_format("[bss] [%x-%x] %d bytes\n", (uint32_t) start_bss, (uint32_t) end_bss, &end_bss - &start_bss);
 }
 
 void blahaj_command(int argc, char **argv) {
