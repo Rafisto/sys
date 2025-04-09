@@ -1,4 +1,5 @@
 #include "mmap.h"
+#include "memory.h"
 #include "physical.h"
 
 int init_mmap(uint32_t multiboot_info_address)
@@ -33,4 +34,19 @@ int init_mmap(uint32_t multiboot_info_address)
         }
     }
     return -1;
+}
+
+void dump_bitmap() {
+    for (int i = 0; i < MAX_FRAMES/8; i++) {
+        if (i % 8 == 0) serial_write_format("[%x-%x] ", (i*FRAME_SIZE)*8, ((i+63)*FRAME_SIZE)*8-1);
+        for (int j = 0; j < 8; j++) {
+            if (bitmap[i] << j & (1 << j)) {
+                serial_write('*');
+            } else {
+                serial_write('.');
+            }
+        }
+        serial_write(' ');
+        if (i % 8 == 7) serial_write('\n');
+    }
 }

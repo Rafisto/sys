@@ -32,7 +32,6 @@ void serial_write_int(int num) {
 }
 
 void serial_write_hex(int num) {
-    serial_print("0x");
     for (int i = 28; i >= 0; i -= 4) {
         int digit = (num >> i) & 0xF;
         if (digit < 10)

@@ -29,6 +29,9 @@ extern uint32_t end_data;
 extern uint32_t start_bss;
 extern uint32_t end_bss;
 
+// end
+extern uint32_t end;
+
 /* 
     MULTIBOOT2 HEADERS
     Refer to the Multiboot2 specification for more information on the tags.

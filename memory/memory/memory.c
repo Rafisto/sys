@@ -1,5 +1,6 @@
 #include "memory.h"
 
+uint8_t bitmap[MAX_FRAMES / 8];
 memory_region_t memory_regions[MAX_USABLE_REGIONS];
 size_t memory_region_count = 0;
 

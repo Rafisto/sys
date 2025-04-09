@@ -66,5 +66,5 @@ DATA32_SEL equ gdt32_data - gdt_start
 section .bss
 
 stack_begin:
-    resb 4 * 32 * 1024; 32kiB stack
+    resb 10 * 32 * 1024; 32kiB stack
 stack_end:

@@ -1,27 +1,24 @@
 #include "physical.h"
+#include "memory.h"
 
-static inline void set_frame(uint32_t frame)
+static inline void mark_frame(uint32_t frame, int bit)
 {
-    bitmap[frame / 8] |= (1 << (frame % 8));
+    if (bit) bitmap[frame / 8] |= (1 << (frame % 8));
+    else bitmap[frame / 8] &= ~(1 << (frame % 8));
 }
 
-static inline void clear_frame(uint32_t frame)
+static inline int frame_free(uint32_t frame)
 {
-    bitmap[frame / 8] &= ~(1 << (frame % 8));
-}
-
-static inline int test_frame(uint32_t frame)
-{
-    return bitmap[frame / 8] & (1 << (frame % 8));
+    return (bitmap[frame / 8] & (1 << (frame % 8))) == 0;    
 }
 
 void *allocate_frame()
 {
     for (uint32_t i = 0; i < MAX_FRAMES ; i++)
     {
-        if (test_frame(i))
+        if (frame_free(i))
         {
-            set_frame(i);
+            mark_frame(i, 1);
             return (void *)(i * FRAME_SIZE);
         }
     }
@@ -31,47 +28,31 @@ void *allocate_frame()
 void free_frame(void *addr)
 {
     uint32_t frame = (uint32_t)addr / FRAME_SIZE;
-    clear_frame(frame);
+    mark_frame(frame, 0);
 }
 
 int is_frame_free(void *addr)
 {
     uint32_t frame = (uint32_t)addr / FRAME_SIZE;
-    return !test_frame(frame);
+    return frame_free(frame);
 }
 
 void init_physical_memory()
 {
     memset(bitmap, 0, sizeof(bitmap));
 
-    for (size_t i = 0; i < memory_region_count; i++)
-    {
-        serial_write_format("[pmem] usable region %d: base_addr = %x, length = %x, type = %d\n", i, memory_regions[i].base, memory_regions[i].length, 1);
-        uint64_t start = memory_regions[i].base;
-        uint64_t end = start + memory_regions[i].length;
-
-        for (uint64_t j = start; j < end; j += FRAME_SIZE)
-        {
-            uint32_t frame = j / FRAME_SIZE;
-            if (frame < MAX_FRAMES)
-            {
-                clear_frame(frame);
-            }
-        }
-    }
-
-    // mark the kernel memory as used
     uint32_t kernel_start = (uint32_t)&start_text;
-    uint32_t kernel_end = (uint32_t)&end_bss;
+    uint32_t kernel_end = (uintptr_t)&end_bss;
     serial_write_format("[pmem] kernel memory: %x - %x\n", kernel_start, kernel_end);
-    for (uint32_t j = (kernel_start / FRAME_SIZE) * FRAME_SIZE; j < ((kernel_end + FRAME_SIZE - 1) / FRAME_SIZE) * FRAME_SIZE; j += FRAME_SIZE)
-    {
-        uint32_t frame = j / FRAME_SIZE;
-        if (frame < MAX_FRAMES)
-        {
-            set_frame(frame);
-        }
+
+    uint32_t frame = 0;
+    while(frame * FRAME_SIZE < kernel_end) {
+        mark_frame(frame, 1);
+        frame++;
     }
+
+    dump_bitmap();
+    
     serial_write_format("[pmem] kernel memory marked as used\n");
 
     uint32_t total_memory = 0;
@@ -84,7 +65,7 @@ void init_physical_memory()
     uint32_t free_memory = 0;
     for (size_t i = 0; i < MAX_FRAMES; i++)
     {
-        if (!test_frame(i))
+        if (!frame_free(i))
         {
             free_memory += FRAME_SIZE;
         }

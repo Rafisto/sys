@@ -5,6 +5,7 @@
 
 #include "kernel/types.h"
 
+#include "memory/memory.h"
 #include "screen/framebuffer.h"
 #include "screen/fscreen.h"
 
@@ -72,6 +73,33 @@ void kmain(uint32_t multiboot_info_address)
 
     write_string("Welcome to my tiny system.\n");
     console_prompt();
+
+    // allocate a frame
+    void *frame = allocate_frame();
+    void *frame2 = allocate_frame();
+    if (frame)
+    {
+        serial_write_format("[pmem] Frame number: %x\n", (uint32_t)frame);
+        serial_write_format("[pmem] Frame2 number: %x\n", (uint32_t)frame2);
+    }
+    else
+    {
+        serial_print("[pmem] Failed to allocate frame\n");
+    }
+
+    // free the frame
+    free_frame(frame);
+    serial_write_format("[pmem] Freed frame at %x\n", (uint32_t)frame);
+
+    // check if the frame is free
+    if (is_frame_free(frame))
+    {
+        serial_write_format("[pmem] Frame at %x is free\n", (uint32_t)frame);
+    }
+    else
+    {
+        serial_print("[pmem] Frame is not free\n");
+    }
 
     // this literally works like arduino serial port
     char buffer[10];

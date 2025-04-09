@@ -1,15 +1,15 @@
 #ifndef BASE_COMMANDS_H
 #define BASE_COMMANDS_H
 
-void help_command();
-void clear_command();
-void uptime_command();
-void shutdown_command();
-void reboot_command();
-void echo_command();
-void sum_command();
-void meminfo_command();
-void blahaj_command();
+void help_command(int argc, char **argv);
+void clear_command(int argc, char **argv);
+void uptime_command(int argc, char **argv);
+void shutdown_command(int argc, char **argv);
+void reboot_command(int argc, char **argv);
+void echo_command(int argc, char **argv);
+void sum_command(int argc, char **argv);
+void meminfo_command(int argc, char **argv);
+void blahaj_command(int argc, char **argv);
 
 typedef void (*cmdhandler)(int argc, char **argv);
 
