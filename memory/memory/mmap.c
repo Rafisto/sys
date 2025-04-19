@@ -37,8 +37,8 @@ int init_mmap(uint32_t multiboot_info_address)
 }
 
 void dump_bitmap() {
-    for (int i = 0; i < MAX_FRAMES/8; i++) {
-        if (i % 8 == 0) serial_write_format("[%x-%x] ", (i*FRAME_SIZE)*8, ((i+63)*FRAME_SIZE)*8-1);
+    for (int i = 0; i < MAX_FRAMES; i+=8) {
+        serial_write_format("[%x-%x]", (i * FRAME_SIZE), (i + 8) * FRAME_SIZE - 1);
         for (int j = 0; j < 8; j++) {
             if (bitmap[i] << j & (1 << j)) {
                 serial_write('*');
@@ -46,7 +46,6 @@ void dump_bitmap() {
                 serial_write('.');
             }
         }
-        serial_write(' ');
-        if (i % 8 == 7) serial_write('\n');
+        serial_write('\n');
     }
 }
