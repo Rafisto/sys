@@ -1,4 +1,4 @@
-ENTRY(start)
+ENTRY(_start)
 
 SECTIONS {
     . = 0x00100000; /* Load kernel at 1MiB */

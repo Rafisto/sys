@@ -15,4 +15,9 @@ static inline unsigned char inb(unsigned short port)
     return ret;
 }
 
+static inline void load_idt(void *idt_ptr)
+{
+    __asm__ volatile("lidt (%0); sti" : : "r"(idt_ptr) : "memory");
+}
+
 #endif // KERNEL_X86_H

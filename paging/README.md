@@ -1,7 +1,26 @@
 ## RafistOS
 
 - [RafistOS](#rafistos)
+  - [Boot Sequence](#boot-sequence)
+  - [Goals](#goals)
   - [Paging](#paging)
+
+### Boot Sequence
+
+- Load kernel
+- Setup GDT
+- Setup Stack
+- Process Multiboot2
+- Setup Predefined Memory Map
+- Setup Paging
+- Begin `kmain()`
+
+### Goals
+
+- Implement Generic Interrupt Handling
+- Implement APIC/PIT
+- Implement Context Switches and Process Management
+- Create a GUI Library
 
 ### Paging
 

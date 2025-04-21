@@ -11,7 +11,7 @@ static void initialize_idt_pointer()
 
 static void initialize_pic()
 {
-    asm_write_port(PIC_1_CTRL, 0x11);
+    asm_write_port(PIC_MAIN_CONTROL, 0x11);
     asm_write_port(PIC_2_CTRL, 0x11);
 
     asm_write_port(PIC_1_DATA, 0x20);

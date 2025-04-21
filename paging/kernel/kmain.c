@@ -1,7 +1,11 @@
 #include "memory/paging.h"
+#include "interrupt/idt.h"
 
 #include "../boot/multiboot.h"
 #include "../serial/uart.h"
+
+#include "../dev/rtc/rtc.h"
+#include "../dev/ps2/mouse.h"
 
 void print_entrypgdir()
 {
@@ -29,22 +33,68 @@ void kmain()
     dynamic_identity_map(framebuffer->framebuffer_addr, PAGE_PRESENT | PAGE_RW);
     print_entrypgdir();
 
-    slog("Printing a pixel");
-    uint8_t *fb = (uint8_t *)framebuffer->framebuffer_addr;
-    uint32_t x = 100;
-    uint32_t y = 100;
-    uint32_t color = 0x00FF00; // green in 0x00RRGGBB
-
-    uint32_t offset = y * framebuffer->framebuffer_pitch + x * 4; // 4 bytes per pixel (32bpp)
-    fb[offset + 0] = (color >> 0) & 0xFF;                         // Blue
-    fb[offset + 1] = (color >> 8) & 0xFF;                         // Green
-    fb[offset + 2] = (color >> 16) & 0xFF;                        // Red
-    fb[offset + 3] = 0x00;                                        // Alpha or padding
-
+    idt_init();
     slog("Kernel loaded");
+
+    rtc_time time;
+    rtc_get_time(&time);
+
+    slog("RTC Time: %d:%d:%d %d/%d/%d",
+         time.hours, time.minutes, time.seconds,
+         time.day, time.month, time.year);
+
+    uint8_t *fb = (uint8_t *)framebuffer->framebuffer_addr;
+    uint32_t color = 0xFF00FF;
+    uint32_t black = 0x000000;
+    mouse_packet packet;
+    mouse_init();
+
+    int32_t mouse_x = framebuffer->framebuffer_width / 2;
+    int32_t mouse_y = framebuffer->framebuffer_height / 2;
 
     while (1)
     {
-        asm volatile("hlt");
+        if (mouse_poll(&packet))
+        {
+            // Erase previous square
+            for (uint32_t dy = 0; dy < 10; dy++)
+            {
+                for (uint32_t dx = 0; dx < 10; dx++)
+                {
+                    uint32_t offset = (mouse_y + dy) * framebuffer->framebuffer_pitch + (mouse_x + dx) * 4;
+                    fb[offset + 0] = (black >> 0) & 0xFF;
+                    fb[offset + 1] = (black >> 8) & 0xFF;
+                    fb[offset + 2] = (black >> 16) & 0xFF;
+                    fb[offset + 3] = 0x00;
+                }
+            }
+
+            // Update position
+            mouse_x += packet.dx;
+            mouse_y -= packet.dy;
+
+            // Clamp to bounds
+            if (mouse_x < 0)
+                mouse_x = 0;
+            if (mouse_y < 0)
+                mouse_y = 0;
+            if (mouse_x > (int)(framebuffer->framebuffer_width - 10))
+                mouse_x = framebuffer->framebuffer_width - 10;
+            if (mouse_y > (int)(framebuffer->framebuffer_height - 10))
+                mouse_y = framebuffer->framebuffer_height - 10;
+
+            // Draw new square
+            for (uint32_t dy = 0; dy < 10; dy++)
+            {
+                for (uint32_t dx = 0; dx < 10; dx++)
+                {
+                    uint32_t offset = (mouse_y + dy) * framebuffer->framebuffer_pitch + (mouse_x + dx) * 4;
+                    fb[offset + 0] = (color >> 0) & 0xFF;
+                    fb[offset + 1] = (color >> 8) & 0xFF;
+                    fb[offset + 2] = (color >> 16) & 0xFF;
+                    fb[offset + 3] = 0x00;
+                }
+            }
+        }
     }
 }

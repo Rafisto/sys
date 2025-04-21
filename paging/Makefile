@@ -1,6 +1,6 @@
 CC = gcc
 LD = ld
-CFLAGS = -ffreestanding -nostdlib -nodefaultlibs -no-pie -fno-pic -static -fno-stack-protector -m32 -Iinclude
+CFLAGS = -ffreestanding -nostdlib -nodefaultlibs -no-pie -fno-pic -static -fno-stack-protector -m32 -g -Iinclude
 LDFLAGS = -m elf_i386
 
 kernel := _build/kernel.bin
@@ -9,7 +9,7 @@ iso := _build/rafistos.iso
 
 linker_script := linker.ld
 grub_cfg := grub.cfg
-assembly_source_files := boot/header.asm boot/boot.asm
+assembly_source_files := boot/header.asm boot/boot.asm kernel/interrupt/pit.asm
 assembly_object_files := $(patsubst %.asm, _build/%.o, $(assembly_source_files))
 c_source_dirs := $(shell find . -type d)
 c_source_files := $(foreach dir, $(c_source_dirs), $(wildcard $(dir)/*.c))
@@ -25,10 +25,10 @@ clean:
 	- @rm -fr _build/isofiles
 
 qemu: $(iso)
-	qemu-system-x86_64 -cdrom $(iso) -vga std -s -serial stdio
+	qemu-system-i386 -cdrom $(iso) -vga std -s -serial stdio
 
 qemu-gdb: $(iso)
-	qemu-system-x86_64 -cdrom $(iso) -vga std -s -serial stdio -S
+	qemu-system-i386 -cdrom $(iso) -vga std -s -serial stdio -S
 
 iso: $(iso)
 	@echo "Done"
@@ -40,11 +40,9 @@ $(iso): $(kernel) $(grub_cfg)
 	grub-mkrescue -o $(iso) _build/isofiles #2> /dev/null
 
 $(kernel): $(c_object_files) $(assembly_object_files) $(linker_script)
-	echo $(c_object_files)
 	ld $(LDFLAGS) -T $(linker_script) -o $(kernel) $(assembly_object_files) $(c_object_files)
 
 $(kernel_elf): $(c_object_files) $(assembly_object_files) $(linker_script)
-	echo $(c_object_files)
 	ld $(LDFLAGS) -T $(linker_script) -o $(kernel_elf) $(assembly_object_files) $(c_object_files)
 
 _build/%.o: %.c
@@ -53,4 +51,4 @@ _build/%.o: %.c
 
 _build/%.o: %.asm
 	@mkdir -p $(shell dirname $@)
-	nasm -felf32 $< -o $@
+	nasm -felf32 -g $< -o $@
