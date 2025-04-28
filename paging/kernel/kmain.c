@@ -39,7 +39,7 @@ void kmain()
     rtc_time time;
     rtc_get_time(&time);
 
-    slog("RTC Time: %d:%d:%d %d/%d/%d",
+    slog("RTC Time: h=%d m=%d s=%d day=%d/%d/%d",
          time.hours, time.minutes, time.seconds,
          time.day, time.month, time.year);
 
