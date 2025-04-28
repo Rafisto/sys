@@ -9,6 +9,8 @@
         write_format_impl(fmt, args, sizeof(args) / sizeof(args[0])); \
     } while (0)
 
+int get_current_row();
+int get_current_column();
 void screen_clear();
 void screen_write_at(int row, int column, char character, int color);
 void set_color(int R, int G, int B);

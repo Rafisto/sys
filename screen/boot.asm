@@ -66,5 +66,9 @@ DATA32_SEL equ gdt32_data - gdt_start
 section .bss
 
 stack_begin:
+<<<<<<< Updated upstream
     resb 4 * 32 * 1024; 32kiB stack
+=======
+    resb 4 * 1024 * 32; 32KB stack
+>>>>>>> Stashed changes
 stack_end:

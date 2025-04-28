@@ -3,6 +3,11 @@
 
 // idt.asm
 extern void asm_keyboard_handler_interrupt(void);
+<<<<<<< Updated upstream
+=======
+extern void asm_divide_by_zero_handler(void);
+extern void asm_default_exception_handler(void);
+>>>>>>> Stashed changes
 extern unsigned char asm_read_port(int port);
 extern void asm_write_port(int port, unsigned char val);
 extern void asm_load_idt(void* ptr);

@@ -31,6 +31,7 @@ extern struct idt_entry idt_table[IDT_SIZE];
 extern struct idt_pointer idt_ptr;
 
 void load_idt_entry(int isr_number, unsigned long base, short int selector, unsigned char flags);
+void load_idt_default_entry(unsigned long base, short int selector, unsigned char flags);
 void interrupt_descriptor_table_init();
 
 #endif // BASE_IDT_H

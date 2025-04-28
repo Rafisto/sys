@@ -5,7 +5,7 @@ extern kmain
 global stack_begin
 global stack_end
 
-start:
+start:    
     lgdt [gdtr]
 
     jmp CODE32_SEL:.setcs
@@ -18,8 +18,19 @@ start:
     mov ss,  ax
     mov esp, stack_end
 
-    call kmain
+    ; Enable SSE and FPU
+    ; Necessary as otherwise executing FPA 
+    ; instructions will cause a general protection fault
+    ; mov eax, cr0
+    ; and eax, 0xFFFFFFFB  ; Clear bit 2 to enable FPU
+    ; or eax, 0x2          ; Set bit 1 to enable SSE
+    ; mov cr0, eax
+    ; mov eax, cr4
+    ; or eax, 3 << 9       ; Set OSFXSR and OSXMMEXCPT bits
+    ; mov cr4, eax
 
+    ; push ebxm
+    call kmain
 
 endloop:
     hlt                         

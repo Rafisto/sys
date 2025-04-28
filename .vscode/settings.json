@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        ".als.json": "jsonc",
+        "doomgeneric.h": "c",
+        "fscreen.h": "c",
+        "commands.h": "c",
+        "framebuffer.h": "c"
+    }
+}

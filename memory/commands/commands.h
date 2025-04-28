@@ -1,6 +1,8 @@
 #ifndef BASE_COMMANDS_H
 #define BASE_COMMANDS_H
 
+#include "../screen/framebuffer.h"
+
 void help_command(int argc, char **argv);
 void clear_command(int argc, char **argv);
 void uptime_command(int argc, char **argv);
@@ -9,7 +11,7 @@ void reboot_command(int argc, char **argv);
 void echo_command(int argc, char **argv);
 void sum_command(int argc, char **argv);
 void meminfo_command(int argc, char **argv);
-void blahaj_command(int argc, char **argv);
+void oslogo_command(int argc, char **argv);
 
 typedef void (*cmdhandler)(int argc, char **argv);
 
@@ -27,7 +29,7 @@ static Command COMMANDS[] = {
     {"echo", echo_command},
     {"sum", sum_command},
     {"meminfo", meminfo_command},
-    {"blahaj", blahaj_command}
+    {"oslogo", oslogo_command}
 };
 
 static int get_commands_count() {

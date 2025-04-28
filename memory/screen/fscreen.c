@@ -8,6 +8,14 @@ static int current_row = 0;
 static int current_column = 0;
 static int current_color = 0xFFFFFF;
 
+int get_current_row() {
+    return current_row;
+}
+
+int get_current_column() {
+    return current_column;
+}
+
 void screen_clear() {
     clear_framebuffer();
     current_row = 0;
