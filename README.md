@@ -9,11 +9,11 @@ Table of Contents
 
 ## Serial
 
-The `misc/serial` is a challenge I made for [Break the Syntax CTF 2025](https://ctftime.org/event/2749). The contestants had to find out that the device, which simulated actions performed by a chinese ethernet switch, is sending morse code after specific number of PIC interrupts, then browse through a program memory. There were only a few solves.
+The `misc/serial` is a challenge I made for [Break the Syntax CTF 2025](https://ctftime.org/event/2749). The contestants had to find out that the device, which simulated actions performed by a chinese ethernet switch, is sending morse code after specific number of PIC interrupts, then browse through a program memory. There were only a few solves. Feel free to browse the [source code](./serial/).
 
 ![How to solve misc/serial from Break the Syntax CTF 2025](./pub/serial.gif)
 
-Feel free to check out my [original writeup for this challenge](./serial/_solve/WRITEUP.md)
+You can also check out my [original writeup for this challenge](./serial/_solve/WRITEUP.md)
  
 ## Screen
 
