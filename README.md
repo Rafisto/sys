@@ -1,5 +1,6 @@
 Table of Contents
 
+- [Serial](#serial) - A challenge I made for BtSCTF 2025.
 - [Screen](#screen) - Text mode in framebuffer using a generated character set bitmap.
 - [Framebuffer](#framebuffer) - Rotating a cube using framebuffer set in the bootloader.
 - [Command Line Interface](#command-line-interface) - CLI with a few commands to interact with the system.
@@ -8,7 +9,7 @@ Table of Contents
 
 ## Serial
 
-The `misc/serial` is a challenge I made for [Break the Syntax CTF 2025](https://ctftime.org/event/2749). The contestants had to find out that the device is sending morse code after specific number of PIC interrupts, then browse through a program memory. There were only a few solves.
+The `misc/serial` is a challenge I made for [Break the Syntax CTF 2025](https://ctftime.org/event/2749). The contestants had to find out that the device, which simulated actions performed by a chinese ethernet switch, is sending morse code after specific number of PIC interrupts, then browse through a program memory. There were only a few solves.
 
 ![How to solve misc/serial from Break the Syntax CTF 2025](./pub/serial.gif)
 
