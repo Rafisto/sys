@@ -6,6 +6,7 @@
 #include "../memory/memory.h"
 
 #include "../../serial/uart.h"
+#include "../proc/tasks.h"
 
 #define GDT_KERNEL_CODE 0x08
 

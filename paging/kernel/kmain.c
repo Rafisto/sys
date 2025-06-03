@@ -1,11 +1,14 @@
 #include "memory/paging.h"
 #include "interrupt/idt.h"
+#include "proc/tasks.h"
 
 #include "../boot/multiboot.h"
 #include "../serial/uart.h"
 
 #include "../dev/rtc/rtc.h"
 #include "../dev/ps2/mouse.h"
+#include "../dev/fb/fscreen.h"
+
 
 void print_entrypgdir()
 {
@@ -23,19 +26,46 @@ void print_entrypgdir()
     }
 }
 
+
+static void task_entry(uint32_t id) {
+    // do a software interrupt
+	// asm("int $0x80" :: "a"(id));
+	// there's no memory protection so we can write directly to vga buffer
+	// (just to show that it's still running)
+	uint8_t a = 0;
+    char t = '1';
+	while (1) {
+        t++;
+        if (t > '9') t = '1';
+        fb_screen_write_at(0, id * 2, t, 0x0F);
+        
+	}
+
+	// IMPORTANT: all tasks need to end in an infinite loop, otherwise
+	// the cpu will just continue executing garbage code from here
+}
+
 void kmain()
 {
+    // slog("Kernel Booting...");
+    // print_entrypgdir();
+    // slog("Kernel framebuffer address %x", (unsigned int)framebuffer_addr);
 
-    slog("Kernel Booting...");
-    print_entrypgdir();
-    slog("Kernel framebuffer address %x", (unsigned int)framebuffer_addr);
+    // slog("Dynamically identity-mapping framebuffer at %x", framebuffer->framebuffer_addr);
+    // dynamic_identity_map(framebuffer->framebuffer_addr, PAGE_PRESENT | PAGE_RW);
 
-    slog("Dynamically identity-mapping framebuffer at %x", framebuffer->framebuffer_addr);
-    dynamic_identity_map(framebuffer->framebuffer_addr, PAGE_PRESENT | PAGE_RW);
-    print_entrypgdir();
+    // print_entrypgdir();
+
+    setup_gdt();
 
     idt_init();
 	pit_init(1000);
+    setup_tasks();
+
+	create_task(1, (uint32_t) task_entry, 0xC80000, 0xC00000, 0);
+	create_task(2, (uint32_t) task_entry, 0xD80000, 0xD00000, 0);
+	create_task(3, (uint32_t) task_entry, 0xE80000, 0xE00000, 0);
+	create_task(4, (uint32_t) task_entry, 0xF80000, 0xF00000, 0);
 
     enable_interrupts();
 
@@ -48,58 +78,8 @@ void kmain()
          time.hours, time.minutes, time.seconds,
          time.day, time.month, time.year);
 
-    uint8_t *fb = (uint8_t *)framebuffer->framebuffer_addr;
-    uint32_t color = 0xFF00FF;
-    uint32_t black = 0x000000;
-    mouse_packet packet;
-    mouse_init();
-
-    int32_t mouse_x = framebuffer->framebuffer_width / 2;
-    int32_t mouse_y = framebuffer->framebuffer_height / 2;
-
     while (1)
     {
-        if (mouse_poll(&packet))
-        {
-            // Erase previous square
-            for (uint32_t dy = 0; dy < 10; dy++)
-            {
-                for (uint32_t dx = 0; dx < 10; dx++)
-                {
-                    uint32_t offset = (mouse_y + dy) * framebuffer->framebuffer_pitch + (mouse_x + dx) * 4;
-                    fb[offset + 0] = (black >> 0) & 0xFF;
-                    fb[offset + 1] = (black >> 8) & 0xFF;
-                    fb[offset + 2] = (black >> 16) & 0xFF;
-                    fb[offset + 3] = 0x00;
-                }
-            }
-
-            // Update position
-            mouse_x += packet.dx;
-            mouse_y -= packet.dy;
-
-            // Clamp to bounds
-            if (mouse_x < 0)
-                mouse_x = 0;
-            if (mouse_y < 0)
-                mouse_y = 0;
-            if (mouse_x > (int)(framebuffer->framebuffer_width - 10))
-                mouse_x = framebuffer->framebuffer_width - 10;
-            if (mouse_y > (int)(framebuffer->framebuffer_height - 10))
-                mouse_y = framebuffer->framebuffer_height - 10;
-
-            // Draw new square
-            for (uint32_t dy = 0; dy < 10; dy++)
-            {
-                for (uint32_t dx = 0; dx < 10; dx++)
-                {
-                    uint32_t offset = (mouse_y + dy) * framebuffer->framebuffer_pitch + (mouse_x + dx) * 4;
-                    fb[offset + 0] = (color >> 0) & 0xFF;
-                    fb[offset + 1] = (color >> 8) & 0xFF;
-                    fb[offset + 2] = (color >> 16) & 0xFF;
-                    fb[offset + 3] = 0x00;
-                }
-            }
-        }
+        asm volatile("hlt");
     }
 }

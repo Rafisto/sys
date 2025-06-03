@@ -10,8 +10,6 @@
 
 #define RPL_USER 3
 
-#define MAX_TASKS 16
-
 #include "../types.h"
 #include "../memory/memory.h"
 

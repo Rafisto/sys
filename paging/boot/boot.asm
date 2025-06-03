@@ -11,31 +11,38 @@ extern setup_gdt      ; GDT setup function (kernel/gdt/gdt.h)
 
 section .text
 _start:
+    mov esp, stack_bottom
     ; Read the multiboot info structure
     push ebx
     call multiboot_info
 
     call setup_gdt
 
-    ; Enable Page Size Extension (for 4 MiB pages if needed)
-    mov eax, cr4
-    or  eax, CR4_PSE
-    mov cr4, eax
+    ; ; Enable Page Size Extension (for 4 MiB pages if needed)
+    ; mov eax, cr4
+    ; or  eax, CR4_PSE
+    ; mov cr4, eax
 
-    ; Load the address of the page directory
-    mov eax, entrypgdir
-    mov cr3, eax
+    ; ; Load the address of the page directory
+    ; mov eax, entrypgdir
+    ; mov cr3, eax
 
-    ; Enable paging
-    mov eax, cr0
-    or  eax, CR0_PAGING
-    mov cr0, eax
+    ; ; Enable paging
+    ; mov eax, cr0
+    ; or  eax, CR0_PAGING
+    ; mov cr0, eax
 
     ; Jump to kernel entry
     call kmain
 
+    cli
+.ends
+    hlt
+    jmp .ends
+
 section .bss
 
-stack_begin:
-    resb 4 * 8192; 32 KiB stack
-stack_end:
+section .bss
+stack_max:
+	resb 16384
+stack_bottom:

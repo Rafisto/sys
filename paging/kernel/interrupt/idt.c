@@ -39,12 +39,18 @@ void pit_init(uint32_t frequency) {
 
 void idt_init()
 {
+	initialize_pic();
+
+	// clear IDT
     memset((uint8_t*) &idt_table, 0, sizeof(idt_entry_t) * 256);
+
+	// all our gate types are "32-bit Interrupt Gates"
+	// meaning interrupts are disabled when we enter the handler
 
 	for (int i = 0; i < 48; i++) {
 		set_idt_entry(i, isr_redirect_table[i], 0x8E);
 	}
-	set_idt_entry(0x80, isr128, 0xEE); 
+	set_idt_entry(0x80, isr128, 0xEE); // DPL 3
 
 	idt_pointer.limit = sizeof(idt_entry_t) * 256 - 1;
 	idt_pointer.base  = (uint32_t) &idt_table;
@@ -52,18 +58,22 @@ void idt_init()
 }
 
 void handle_interrupt(TrapFrame regs) {
+	sprintf("Int %d\n", regs.interrupt);
+	// check if its a IRQ
 	if (regs.interrupt >= 32 && regs.interrupt <= 47) {
+		// acknowledge IRQ
 		if (regs.interrupt >= 40) {
-			outb(0xA0, 0x20); 
+			outb(0xA0, 0x20); // slave PIC
 		}
 		outb(0x20, 0x20);
 
+		// check if this is a PIT interrupt
 		if (regs.interrupt == 32) {
-			sprint("PIT interrupt\n");
+			schedule();
 		}
 	}
  
 	if (regs.interrupt == 0x80) {
-		sprint("Syscall interrupt\n");
+		// syscall demonstration
 	}
 }
