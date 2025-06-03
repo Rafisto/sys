@@ -25,6 +25,7 @@ void print_entrypgdir()
 
 void kmain()
 {
+
     slog("Kernel Booting...");
     print_entrypgdir();
     slog("Kernel framebuffer address %x", (unsigned int)framebuffer_addr);
@@ -34,6 +35,10 @@ void kmain()
     print_entrypgdir();
 
     idt_init();
+	pit_init(1000);
+
+    enable_interrupts();
+
     slog("Kernel loaded");
 
     rtc_time time;

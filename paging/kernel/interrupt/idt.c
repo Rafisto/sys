@@ -1,73 +1,69 @@
 #include "idt.h"
 
-struct idt_entry_t idt_table[IDT_SIZE];
-struct idt_pointer_t idt_ptr;
-
-static void initialize_idt_pointer()
-{
-    idt_ptr.limit = (sizeof(struct idt_entry_t) * IDT_SIZE) - 1;
-    idt_ptr.base = (unsigned int)&idt_table;
-}
+idt_entry_t idt_table[IDT_SIZE] __attribute__((aligned(16)));
+idt_pointer_t idt_pointer;
 
 static void initialize_pic()
 {
-    outb(PIC_1_CTRL, 0x11);
-    outb(PIC_2_CTRL, 0x11);
-
-    outb(PIC_1_DATA, 0x20);
-    outb(PIC_2_DATA, 0x28);
-
-    outb(PIC_1_DATA, 0x04);
-    outb(PIC_2_DATA, 0x02);
-
-    outb(PIC_1_DATA, 0x01);
-    outb(PIC_2_DATA, 0x01);
-
-    // Mask all interrupts on master PIC (PIC1)
-    outb(PIC_1_DATA, 0xFF);
-    outb(PIC_2_DATA, 0xFF); 
-
-    outb(PIC_1_DATA, 0xFE);
-    outb(PIC_2_DATA, 0xFE); 
+    outb(0x20, 0x11);
+	outb(0xA0, 0x11);
+	outb(0x21, 0x20);
+	outb(0xA1, 0x28);
+	outb(0x21, 0x04);
+	outb(0xA1, 0x02);
+	outb(0x21, 0x01);
+	outb(0xA1, 0x01);
+	outb(0x21, 0x00);
+	outb(0xA1, 0x00);
 }
 
-void load_idt_entry(int isr_number, unsigned long base, short int selector, unsigned char flags)
-{
-    idt_table[isr_number].offset_lowerbits = base & 0xFFFF;
-    idt_table[isr_number].offset_higherbits = (base >> 16) & 0xFFFF;
-    idt_table[isr_number].selector = selector;
-    idt_table[isr_number].flags = flags;
-    idt_table[isr_number].zero = 0;
+void set_idt_entry(uint8_t vector, void* isr, uint8_t attributes) {
+	idt_table[vector].offset_lowerbits    = (uint32_t) isr & 0xFFFF;
+	idt_table[vector].selector = GDT_KERNEL_CODE;
+	idt_table[vector].zero   = 0;
+	idt_table[vector].flags = attributes;
+	idt_table[vector].offset_higherbits   = (uint32_t) isr >> 16;
+}
+
+void pit_init(uint32_t frequency) {
+	uint32_t divisor = 1193180 / frequency;
+
+	outb(0x43, 0x36);
+
+	uint8_t l = (uint8_t) (divisor & 0xFF);
+	uint8_t h = (uint8_t) (divisor >> 8 & 0xFF);
+
+	outb(0x40, l);
+	outb(0x40, h);
 }
 
 void idt_init()
 {
-    initialize_pic();
-    initialize_idt_pointer();
+    memset((uint8_t*) &idt_table, 0, sizeof(idt_entry_t) * 256);
 
-    load_idt_entry(32, (unsigned long)pit_handler_asm, 0x08, 0x8E); // IRQ0
-    load_idt_entry(14, (unsigned long)page_fault_handler_asm, 0x08, 0x8E); // page fault
-    load_idt(&idt_ptr);
+	for (int i = 0; i < 48; i++) {
+		set_idt_entry(i, isr_redirect_table[i], 0x8E);
+	}
+	set_idt_entry(0x80, isr128, 0xEE); 
+
+	idt_pointer.limit = sizeof(idt_entry_t) * 256 - 1;
+	idt_pointer.base  = (uint32_t) &idt_table;
+	asm("lidt %0" :: "m"(idt_pointer));
 }
 
-void pit_init()
-{
-    int divisor = PIT_FREQUENCY / PIT_HZ;
+void handle_interrupt(TrapFrame regs) {
+	if (regs.interrupt >= 32 && regs.interrupt <= 47) {
+		if (regs.interrupt >= 40) {
+			outb(0xA0, 0x20); 
+		}
+		outb(0x20, 0x20);
 
-    outb(PIT_COMMAND, 0x36);
-    outb(PIT_CHANNEL0, divisor & 0xFF);
-    outb(PIT_CHANNEL0, (divisor >> 8) & 0xFF);
+		if (regs.interrupt == 32) {
+			sprint("PIT interrupt\n");
+		}
+	}
+ 
+	if (regs.interrupt == 0x80) {
+		sprint("Syscall interrupt\n");
+	}
 }
-
-void pit_handler()
-{
-    outb(0x20, 0x20);
-}
-
-void page_fault_handler() {
-    unsigned long fault_address;
-    asm volatile("movl %%cr2, %0" : "=r"(fault_address));
-    sprintf("Page fault at address: %x\n", fault_address);
-    outb(0x20, 0x20);
-}
-

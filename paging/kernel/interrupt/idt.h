@@ -3,11 +3,11 @@
 
 #include "../x86.h"
 #include "../types.h"
+#include "../memory/memory.h"
 
 #include "../../serial/uart.h"
 
-extern void pit_handler_asm();
-extern void page_fault_handler_asm();
+#define GDT_KERNEL_CODE 0x08
 
 #define IDT_SIZE 256
 #define IDT_ENTRIES 256
@@ -17,34 +17,39 @@ extern void page_fault_handler_asm();
 #define PIC_1_DATA 0x21
 #define PIC_2_DATA 0xA1
 
-struct idt_entry_t
+typedef struct
 {
     unsigned short int offset_lowerbits;
     unsigned short int selector;
     unsigned char zero;
     unsigned char flags;
     unsigned short int offset_higherbits;
-} __attribute__((packed));
+} __attribute__((packed)) idt_entry_t;
 
-struct idt_pointer_t
+typedef struct
 {
     unsigned short limit;
     unsigned int base;
-} __attribute__((packed));
+} __attribute__((packed)) idt_pointer_t;
 
-extern struct idt_entry_t idt_table[IDT_SIZE];
-extern struct idt_pointer_t idt_ptr;
+typedef struct {
+	uint32_t gs, fs, es, ds;
+	uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; 
+	uint32_t interrupt, error;
+	uint32_t eip, cs, eflags, usermode_esp, usermode_ss;
+} TrapFrame;
 
-void load_idt_entry(int isr_number, unsigned long base, short int selector, unsigned char flags);
+extern void* isr_redirect_table[];
+extern void isr128();
+
+void set_idt_entry(uint8_t vector, void* isr, uint8_t attributes);
 void idt_init();
+void pit_init(uint32_t frequency);
 
-#define PIT_CHANNEL0 0x40
-#define PIT_COMMAND 0x43
-#define PIT_FREQUENCY 1193182
-#define PIT_HZ 1000000
+void handle_interrupt(TrapFrame regs);
 
-void pit_init();
-void pit_handler();
-void page_fault_handler();
+#define halt() asm volatile("hlt")
+#define enable_interrupts() asm volatile("sti")
+#define disable_interrupts() asm volatile("cli")
 
 #endif // KERNEL_INTERRUPT_IDT_H

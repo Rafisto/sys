@@ -9,7 +9,7 @@ iso := _build/rafistos.iso
 
 linker_script := linker.ld
 grub_cfg := grub.cfg
-assembly_source_files := boot/header.asm boot/boot.asm kernel/interrupt/pit.asm
+assembly_source_files := boot/header.asm boot/boot.asm kernel/interrupt/idtasm.asm kernel/gdt/lgdt.asm
 assembly_object_files := $(patsubst %.asm, _build/%.o, $(assembly_source_files))
 c_source_dirs := $(shell find . -type d)
 c_source_files := $(foreach dir, $(c_source_dirs), $(wildcard $(dir)/*.c))
