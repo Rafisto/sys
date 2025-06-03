@@ -29,7 +29,7 @@ void print_entrypgdir()
 
 static void task_entry(uint32_t id) {
     // do a software interrupt
-	// asm("int $0x80" :: "a"(id));
+	asm("int $0x80" :: "a"(id));
 	// there's no memory protection so we can write directly to vga buffer
 	// (just to show that it's still running)
 	uint8_t a = 0;
@@ -47,14 +47,14 @@ static void task_entry(uint32_t id) {
 
 void kmain()
 {
-    // slog("Kernel Booting...");
-    // print_entrypgdir();
-    // slog("Kernel framebuffer address %x", (unsigned int)framebuffer_addr);
+    slog("Kernel Booting...");
+    print_entrypgdir();
+    slog("Kernel framebuffer address %x", (unsigned int)framebuffer_addr);
 
-    // slog("Dynamically identity-mapping framebuffer at %x", framebuffer->framebuffer_addr);
-    // dynamic_identity_map(framebuffer->framebuffer_addr, PAGE_PRESENT | PAGE_RW);
+    slog("Dynamically identity-mapping framebuffer at %x", framebuffer->framebuffer_addr);
+    dynamic_identity_map(framebuffer->framebuffer_addr, PAGE_PRESENT | PAGE_RW);
 
-    // print_entrypgdir();
+    print_entrypgdir();
 
     setup_gdt();
 

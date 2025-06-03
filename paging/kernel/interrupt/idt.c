@@ -58,7 +58,23 @@ void idt_init()
 }
 
 void handle_interrupt(TrapFrame regs) {
-	sprintf("Int %d\n", regs.interrupt);
+	if (regs.interrupt < 32) {
+		// handle CPU exceptions
+		slog("CPU Exception %d", regs.interrupt);
+		if (regs.interrupt == 13) {
+			slog("General Protection Fault");
+		} else if (regs.interrupt == 14) {
+			slog("Page Fault");
+		}
+		return;
+	}
+
+	if (regs.interrupt == 128) {
+		// syscall handler
+		slog("Syscall %d", regs.eax);
+		return;
+	}
+
 	// check if its a IRQ
 	if (regs.interrupt >= 32 && regs.interrupt <= 47) {
 		// acknowledge IRQ
