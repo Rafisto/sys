@@ -6,9 +6,8 @@
 #include "../serial/uart.h"
 
 #include "../dev/rtc/rtc.h"
-#include "../dev/ps2/mouse.h"
 #include "../dev/fb/fscreen.h"
-
+#include "../dev/kbd/keyboard.h"
 
 void print_entrypgdir()
 {
@@ -57,6 +56,8 @@ void kmain()
     print_entrypgdir();
 
     setup_gdt();
+
+    keyboard_init();
 
     idt_init();
 	pit_init(1000);

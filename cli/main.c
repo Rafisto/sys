@@ -16,6 +16,9 @@ void init_interrupt() {
 }
 
 int kmain(void) {
+    volatile unsigned int *addr = (unsigned int *)0x10000;
+    *addr = 0xDEADBEEF;
+
     write_string("Initializing kernel...\n");
     screen_clear();
 

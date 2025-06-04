@@ -69,6 +69,10 @@ void handle_interrupt(TrapFrame regs) {
 		return;
 	}
 
+	if (regs.interrupt == 33) {
+		keyboard_handler();
+	}
+
 	if (regs.interrupt == 128) {
 		// syscall handler
 		slog("Syscall %d", regs.eax);

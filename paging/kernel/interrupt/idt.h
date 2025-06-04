@@ -42,6 +42,7 @@ typedef struct {
 
 extern void* isr_redirect_table[];
 extern void isr128();
+extern void keyboard_handler();
 
 void set_idt_entry(uint8_t vector, void* isr, uint8_t attributes);
 void idt_init();
