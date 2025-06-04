@@ -34,13 +34,12 @@ static unsigned char keyboard_map[256] = {
     0, 0, 0, 0, 0, 0, 0, '7',
     '8', '9', '-', '4', '5', '6', '+', '1',
     '2', '3', '0', '.', 0, 0, 0, 0,
-    [0x9C] '\n',
-    [0xB5] '/',
-    [0xC8] KEY_UP, [0xD0] KEY_DN,
-    [0xC9] KEY_PGUP, [0xD1] KEY_PGDN,
-    [0xCB] KEY_LF, [0xCD] KEY_RT,
-    [0x97] KEY_HOME, [0xCF] KEY_END,
-    [0xD2] KEY_INS, [0xD3] KEY_DEL
+    [0x9C]='\n', [0xB5]='/',
+    [0xC8]=KEY_UP, [0xD0]=KEY_DN,
+    [0xC9]=KEY_PGUP, [0xD1]=KEY_PGDN,
+    [0xCB]=KEY_LF, [0xCD]=KEY_RT,
+    [0x97]=KEY_HOME, [0xCF]=KEY_END,
+    [0xD2]=KEY_INS, [0xD3]=KEY_DEL
 };
 
 // typedef void (*console_input_function)(char);
