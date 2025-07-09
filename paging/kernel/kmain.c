@@ -27,21 +27,15 @@ void print_entrypgdir()
 
 
 static void task_entry(uint32_t id) {
-    // do a software interrupt
 	asm("int $0x80" :: "a"(id));
-	// there's no memory protection so we can write directly to vga buffer
-	// (just to show that it's still running)
+    asm("int $0x80" :: "a"(10));
 	uint8_t a = 0;
     char t = '1';
 	while (1) {
         t++;
         if (t > '9') t = '1';
         fb_screen_write_at(0, id * 2, t, 0x0F);
-        
 	}
-
-	// IMPORTANT: all tasks need to end in an infinite loop, otherwise
-	// the cpu will just continue executing garbage code from here
 }
 
 void kmain()
@@ -63,10 +57,20 @@ void kmain()
 	pit_init(1000);
     setup_tasks();
 
-	create_task(1, (uint32_t) task_entry, 0xC80000, 0xC00000, 0);
-	create_task(2, (uint32_t) task_entry, 0xD80000, 0xD00000, 0);
-	create_task(3, (uint32_t) task_entry, 0xE80000, 0xE00000, 0);
-	create_task(4, (uint32_t) task_entry, 0xF80000, 0xF00000, 0);
+    dynamic_identity_map(0x00100000, PAGE_PRESENT | PAGE_RW);
+    dynamic_identity_map(0x00180000, PAGE_PRESENT | PAGE_RW);
+    dynamic_identity_map(0x00B80000, PAGE_PRESENT | PAGE_RW);
+    dynamic_identity_map(0x00C00000, PAGE_PRESENT | PAGE_RW);
+    dynamic_identity_map(0x00C80000, PAGE_PRESENT | PAGE_RW);
+    dynamic_identity_map(0x00D00000, PAGE_PRESENT | PAGE_RW);
+    dynamic_identity_map(0x00D80000, PAGE_PRESENT | PAGE_RW);
+
+    print_entrypgdir();
+
+	create_task(1, (uint32_t) task_entry, 0xC80000, 0xC00000, 1);
+	create_task(2, (uint32_t) task_entry, 0xD80000, 0xD00000, 1);
+	// create_task(3, (uint32_t) task_entry, 0xE80000, 0xE00000, 1);
+	// create_task(4, (uint32_t) task_entry, 0xF80000, 0xF00000, 1);
 
     enable_interrupts();
 

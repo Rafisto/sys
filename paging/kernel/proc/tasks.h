@@ -4,6 +4,7 @@
 #include "../types.h"
 #include "../gdt/gdt.h"
 #include "../../serial/uart.h"
+#include "../memory/paging.h"
 
 #define MAX_TASKS 16
 
@@ -18,6 +19,7 @@ typedef struct {
 	uint32_t id;
 	uint32_t kesp;
 	uint32_t kesp_bottom;
+	uint32_t pgdir;
 } Task;
 
 extern tss_t tss;

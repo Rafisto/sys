@@ -65,6 +65,9 @@ void handle_interrupt(TrapFrame regs) {
 			slog("General Protection Fault");
 		} else if (regs.interrupt == 14) {
 			slog("Page Fault");
+			uint32_t faulting_address;
+			asm("mov %%cr2, %0" : "=r"(faulting_address));
+			slog("Faulting address: %x", faulting_address);
 		}
 		return;
 	}

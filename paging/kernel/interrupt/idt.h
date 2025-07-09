@@ -3,7 +3,6 @@
 
 #include "../x86.h"
 #include "../types.h"
-#include "../memory/memory.h"
 
 #include "../../serial/uart.h"
 #include "../proc/tasks.h"

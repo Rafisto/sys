@@ -26,10 +26,10 @@ clean:
 	- @rm -fr _build/isofiles
 
 qemu: $(iso)
-	qemu-system-i386 -cdrom $(iso) -vga std -s -serial stdio
+	qemu-system-i386 -cdrom $(iso) -vga virtio -s -serial stdio
 
 qemu-gdb: $(iso)
-	qemu-system-i386 -cdrom $(iso) -vga std -s -serial stdio -S
+	qemu-system-i386 -cdrom $(iso) -vga virtio -s -serial stdio -S
 
 iso: $(iso)
 	@echo "Done"

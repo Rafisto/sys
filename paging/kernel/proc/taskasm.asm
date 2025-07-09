@@ -24,6 +24,10 @@ switch_context:
 	
 	; NewTaskKernelStack will match the stack from here on out.
 
+	; load new pgdir
+	mov eax, [edx + 12] ; eax = to->pagedir
+	mov cr3, eax ; load new page directory
+
 	pop ebp
 	pop edi
 	pop esi

@@ -12,6 +12,7 @@ void setup_tasks() {
 	num_tasks = 1;
 	current_task = &tasks[0];
 	current_task->id = 0;
+	current_task->pgdir = (uint32_t) entrypgdir;
 }
 
 // you can also create "kernel tasks" running in kernel space
@@ -54,6 +55,7 @@ void create_task(uint32_t id, uint32_t eip, uint32_t user_stack, uint32_t kernel
 	tasks[id].kesp_bottom = kernel_stack;
 	tasks[id].kesp = (uint32_t) kesp;
 	tasks[id].id = id;
+	tasks[id].pgdir = (uint32_t) entrypgdir;
 }
 
 void schedule() {
@@ -67,17 +69,4 @@ void schedule() {
 
 	// switch context, doesn't return here for newly created tasks
 	switch_context(old, next);
-}
-
-// FIXME: cant pass args to kernel tasks
-static void task_entry(uint32_t id) {
-	asm("int $0x80" :: "a"(id));
-
-	uint8_t a = 0;
-	while (1) {
-		sprintf("Task %d running, a=%d\n", id, a++);
-	}
-
-	// IMPORTANT: all tasks need to end in an infinite loop, otherwise
-	// the cpu will just continue executing garbage code from here
 }

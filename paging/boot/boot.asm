@@ -18,19 +18,19 @@ _start:
 
     call setup_gdt
 
-    ; ; Enable Page Size Extension (for 4 MiB pages if needed)
-    ; mov eax, cr4
-    ; or  eax, CR4_PSE
-    ; mov cr4, eax
+    ; Enable Page Size Extension (for 4 MiB pages if needed)
+    mov eax, cr4
+    or  eax, CR4_PSE
+    mov cr4, eax
 
-    ; ; Load the address of the page directory
-    ; mov eax, entrypgdir
-    ; mov cr3, eax
+    ; Load the address of the page directory
+    mov eax, entrypgdir
+    mov cr3, eax
 
-    ; ; Enable paging
-    ; mov eax, cr0
-    ; or  eax, CR0_PAGING
-    ; mov cr0, eax
+    ; Enable paging
+    mov eax, cr0
+    or  eax, CR0_PAGING
+    mov cr0, eax
 
     ; Jump to kernel entry
     call kmain
